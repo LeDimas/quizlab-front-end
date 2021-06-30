@@ -14,7 +14,7 @@ export const QuestionEditComponent = ({questionObj}) =>{
     }
 
     const handleEditOff = () =>{
-        setQuestion({...question , toEdit:false})
+        setQuestion({description:questionObj.description , options:questionObj.alternatives , toEdit:false})
     }
 
     const handleChangeInputField = event =>{
@@ -25,8 +25,7 @@ export const QuestionEditComponent = ({questionObj}) =>{
             if(option.text === event.target.name){
                 
                 const myObj = {description:question.description , toEdit:true , }
-                
-
+            
                 return {...option , text:event.target.value}
             }else{
                 return {...option}
@@ -56,10 +55,10 @@ export const QuestionEditComponent = ({questionObj}) =>{
                         <div>
                             {question.options.map((option) => {
                                 return(
-                                    <div class="row">
+                                    <div className="row">
 
 
-                                        <div class="input-field col s5">
+                                        <div className="input-field col s5">
                                         <input name={option.text} placeholder="Placeholder" id="first_name" type="text" onChange={handleChangeInputField} class="validate" value={option.text}/>
                                        
                                         </div>
