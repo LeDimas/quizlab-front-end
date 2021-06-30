@@ -1,0 +1,21 @@
+@import "~materialize-css/dist/css/materialize.min.css";
+
+
+
+.input-field input:focus + label {
+  color: rgb(101, 150, 206) !important;
+}
+/* label underline focus color */
+.row .input-field input:focus {
+  border-bottom: 1px solid rgb(101, 150, 206) !important;
+  box-shadow: 0 1px 0 0 rgb(101, 150, 206) !important
+}
+
+.activeNavLink{
+  color:red
+}
+
+.hover-darken:hover{
+  background-color: rgb(194, 194, 194);
+  transition-duration: .5s;
+}
