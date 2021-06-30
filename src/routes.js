@@ -16,7 +16,7 @@ export const useRoutes = isAuthenticated =>{
                 <Route path="/quizGame/:id" exact>
                     <QuizGamePage />
                 </Route>
-                <Route path="/quizManagment" exact>
+                <Route path="/quizManagment/:quizId" exact>
                     <QuizManagmentPage />
                 </Route>
                 <Route path="/create">

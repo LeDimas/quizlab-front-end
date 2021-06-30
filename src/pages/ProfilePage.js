@@ -19,12 +19,16 @@ export const ProfilePage = () =>{
   }, [error, message, clearError])
 
   const cbRemoveQuizFromQuizList = (quizName) =>{
-    console.log(quizList)
-    const newState = quizList.filter((name) => name !== quizName)
-    if(newState.length>1){
+    const newState = quizList.filter((obj)=> obj._id.name !== quizName)
+
+
+    if(newState.length>0){
+        console.log('hello')
         setQuizList(newState)
-    }
+    }else{
+        console.log('fire')
         setQuizList(null)
+    }
     message('Quiz deleted!')
 }
   
@@ -33,6 +37,9 @@ export const ProfilePage = () =>{
         
          const fetched =  await request(`/api/myQuizList` , 'GET' ,null ,{Authorization: `Bearer ${token}`})
          setQuizList(fetched)
+
+         console.log(fetched)
+      
       } catch (error) {}
   } , [token])
 
@@ -46,7 +53,7 @@ export const ProfilePage = () =>{
   }
 
   const test = () =>{
-      setQuizList(null)
+      console.log(quizList)
   }
     
     return(

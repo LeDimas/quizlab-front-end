@@ -4,8 +4,10 @@ import {QuizLink} from '../components/QuizLink'
 
 export const QuizList = ({quizes , cbRemoveQuiz}) => {
 
+    
 
-    if(!quizes || quizes.message === 'no quizes'){
+    if(!quizes || quizes.message === 'no quizes')
+    {
         return(
             <div className="col s10 m7 offset-m1">
                     <h2>
@@ -38,8 +40,8 @@ export const QuizList = ({quizes , cbRemoveQuiz}) => {
     
                            <ul className="collection">
                                {
-                                   quizes.map((quizName , i)=>{
-                                       return <QuizLink cbRemoveQuizFromQuizList={cbRemoveQuiz} key={i} quizName={`${quizName}`}/>
+                                   quizes.map((quizObj , i)=>{
+                                       return <QuizLink cbRemoveQuizFromQuizList={cbRemoveQuiz} key={i} quizId={`${quizObj._id.id}`} quizName={`${quizObj._id.name}`}/>
                                    })
                                }
                            </ul>

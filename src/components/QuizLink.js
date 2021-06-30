@@ -26,7 +26,7 @@ const styles ={
 
 
 
-export const QuizLink = ({quizName , cbRemoveQuizFromQuizList}) => {
+export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
 
     
 
@@ -45,11 +45,12 @@ export const QuizLink = ({quizName , cbRemoveQuizFromQuizList}) => {
     const deleteQuizHandler = async () =>{
 
         try{
+            console.log(quizId)
             setDialogOpen(false);
             cbRemoveQuizFromQuizList(quizName)
 
-            const data = await request(`api/quiz` , 'DELETE'  ,
-            { quizName : quizName} , {Authorization: `Bearer ${auth.token}` })
+            // const data = await request(`api/quiz` , 'DELETE'  ,
+            // { quizName : quizName} , {Authorization: `Bearer ${auth.token}` })
 
         }catch(e){
             console.log(e)
@@ -77,10 +78,9 @@ export const QuizLink = ({quizName , cbRemoveQuizFromQuizList}) => {
                 <div style={{paddingTop:'5px'}}>
 
 
-
+              
                     <Tooltip title="Edit quiz">
-                        <Link to='/create'>
-                            
+                        <Link to={`/quizManagment/${quizId}`}>
                             <EditIcon color='primary' />
                         </Link>
                     </Tooltip>
@@ -92,7 +92,7 @@ export const QuizLink = ({quizName , cbRemoveQuizFromQuizList}) => {
                     </Tooltip>
                     
                     <Tooltip title="Delete quiz">
-                        <IconButton onClick={handleOpenDeleteDialog} aria-label="edit" style={{ paddingTop:'0px', marginLeft:'10px' , backgroundColor:'transparent'}}>
+                        <IconButton onClick={(handleOpenDeleteDialog)} aria-label="edit" style={{ paddingTop:'0px', marginLeft:'10px' , backgroundColor:'transparent'}}>
                             <DeleteIcon color='primary'  />
                         </IconButton>    
                     </Tooltip>
