@@ -11,22 +11,23 @@ import 'materialize-css'
 Modal.setAppElement('#root');
 function App() {
 
-  const {login,logout,token,userId , ready} = useAuth();
+  const {login,logout,token,userId ,ready , userName } = useAuth();
   const isAuthenticated  = !!token
   const routes = useRoutes(isAuthenticated);
+  
 
   if(!ready){
     return <Loader/>
   }
 
   return (
-    <AuthContext.Provider value={{token , login ,logout , userId , isAuthenticated}}>
+    <AuthContext.Provider value={{token , login ,logout , userName , userId , isAuthenticated}}>
       <BrowserRouter>
         {isAuthenticated && <NavBar/>}
         <div className="container">
           {routes}
         </div>
-        <Footer/>
+        {/* <Footer/> */}
       </BrowserRouter>
     </AuthContext.Provider>
     

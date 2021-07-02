@@ -1,6 +1,5 @@
-import {useState ,  useContext} from 'react'
+import {useState } from 'react'
 import {useMessage} from '../hooks/message.hook'
-import {AuthContext} from '../context/authContext'
 import { AnwserOptions } from '../components/AnwserOptions'
 import { QuestionListPreview } from '../components/QuestionListPreview'
 
@@ -8,7 +7,7 @@ import { QuestionListPreview } from '../components/QuestionListPreview'
 
 export const CreateQuizPage = () =>{
 
-    const auth = useContext(AuthContext)
+ 
 
  
     
@@ -178,7 +177,7 @@ export const CreateQuizPage = () =>{
                                     name="anwserOption"  onChange={questionFormChangeHandler} onKeyPress={pressHandler} />
                                 </div>
 
-                                <AnwserOptions createQuestionHandler={createQuestion} options={questions.anwserOptions} question={questions.questDesc} disabled={previewMode}  removeHandler={removeHandler} />
+                                <AnwserOptions btnText={'Next Question'}  createQuestionHandler={createQuestion} options={questions.anwserOptions} question={questions.questDesc} disabled={previewMode}  removeHandler={removeHandler} />
 
                                                      
                                

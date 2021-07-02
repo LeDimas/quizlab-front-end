@@ -4,11 +4,7 @@ import "materialize-css/dist/css/materialize.min.css";
 
 class Modal extends Component {
 
-    constructor(props) {
-        super(props);
-     
-       
-      }
+   
 
   componentDidMount() {
     const options = {

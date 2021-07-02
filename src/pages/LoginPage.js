@@ -37,8 +37,8 @@ export const LoginPage = () =>{
         try{
             const data = await request('/api/auth/login' , 'POST' , {...form})
 
-            console.log(data)
-            auth.login(data.token , data.userId , data.expiresInH)
+        
+            auth.login(data.token , data.userId , data.username)
         }catch(e){
 
         }

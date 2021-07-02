@@ -1,6 +1,6 @@
 import {useState } from 'react';
 
-export const AnwserOptions = ({options , question , removeHandler , disabled , editHandler , createQuestionHandler}) =>{
+export const AnwserOptions = ({options , question , removeHandler , disabled , btnText , createQuestionHandler ,}) =>{
 
     
     
@@ -36,7 +36,7 @@ export const AnwserOptions = ({options , question , removeHandler , disabled , e
           
      
         )}
-        <button className="btn-small waves-effect  green darken-1" disabled={disabled} onClick={createQuestionButtonHandler} > Next Question </button>
+        <button className="btn-small waves-effect  green darken-1" disabled={disabled} onClick={createQuestionButtonHandler} > {btnText} </button>
     </ul>
     )
 }

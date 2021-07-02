@@ -6,6 +6,10 @@ import {useParams} from 'react-router-dom'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 import {QuestionList} from '../components/QuestionList'
+import {axios} from '../axios'
+import {CreateQuestion} from '../components/CreateQuestion'
+import {Link} from 'react-router-dom'
+
 
 
 export const QuizManagmentPage = () =>{
@@ -13,6 +17,7 @@ export const QuizManagmentPage = () =>{
     const {request , loading} = useHttp()
     const [quiz , setQuiz] = useState(null)
     const quizId = useParams().quizId
+    const [createNew , setCreateNew] = useState(false)
 
     const getQuiz = useCallback(async () => {
         try{
@@ -20,9 +25,10 @@ export const QuizManagmentPage = () =>{
                 Authorization: `Bearer ${token}`
             })
 
-            console.log(fetchedQuiz)
+            
 
             setQuiz(fetchedQuiz)
+            console.log(fetchedQuiz)
         }catch(e){
 
         }
@@ -32,12 +38,66 @@ export const QuizManagmentPage = () =>{
         getQuiz()
     },[getQuiz])
 
+    const cbUpdateQuestion = async (updateData , quizId) =>{
+
+      
+        try{
+            const response = await axios.put(`api/quiz/${quizId}/question` , {description:updateData.description , oldDescription:updateData.oldDescription , alternatives:updateData.alternatives} , {
+                headers: {
+                  Authorization: 'Bearer ' + token 
+                }})
+            console.log(response)
+        
+
+        }catch(e){
+            console.log(e)
+        }
+
+
+
+    }
+
+    const handleOpenQuestionForm = () =>{
+        setCreateNew(true)
+    }
+
+         
+    const cbCreateQuestion = (response) =>{
+        setCreateNew(false)
+        setQuiz(response.data)
+
+        console.log(response.data)
+    }
+
+  
+
 
     // todo:make forbidden view
 
 
     if(loading){
         return <Loader/>
+    }
+
+    const cbDeleteQuestion = async (callbAckQuestion) => {
+
+        try{
+            
+        const newQuestionState =  quiz.questions.filter((questObj) => questObj.description !== callbAckQuestion.description)
+        setQuiz({...quiz , questions:newQuestionState})
+
+        console.log(quiz)
+
+
+       const response = await axios.delete(`api/quiz/${callbAckQuestion.quiz}/question` ,
+       { data: { questionDescription: callbAckQuestion.description }, headers: { "Authorization":'Bearer ' + token  } }  )
+
+        console.log(response)
+
+        }catch(e){
+            console.log(e)
+        }
+
     }
 
 
@@ -79,13 +139,23 @@ export const QuizManagmentPage = () =>{
                     <h5>Questions</h5>
                 </div>
                 <div class="divider"/>
-                <QuestionList questions={quiz.questions}/>
+                <QuestionList cbUpdateQuestion={cbUpdateQuestion} cbDeleteQuestion={cbDeleteQuestion} questions={quiz.questions}/>
             </div>
           }
+        {
+            !createNew ? <button style={{marginTop:'30px' , marginLeft:'400px'}} onClick={handleOpenQuestionForm} className="btn-small waves-effect  green darken-1" > Add another question </button>   : <span></span>
+        }
 
-        <button style={{marginTop:'30px' , marginLeft:'400px'}} className="btn-small waves-effect  green darken-1" > Add another question </button>  
+        
                 
-           
+        {
+            createNew ? <CreateQuestion cbCreateQuestion={cbCreateQuestion} quizId={quizId} /> : <span></span>
+        }
+
+        <Link to="/profile">
+            <button style={{width:'190px',marginTop:'30px' , marginLeft:'405px'}} className="btn-small waves-effect  blue darken-1" > Back to Profile </button> 
+        </Link>
+
 
 
 

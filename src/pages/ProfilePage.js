@@ -13,6 +13,8 @@ export const ProfilePage = () =>{
   const message = useMessage()
 
 
+
+
   useEffect(() => {
     message(error)
     clearError()
@@ -41,7 +43,7 @@ export const ProfilePage = () =>{
          console.log(fetched)
       
       } catch (error) {}
-  } , [token])
+  } , [token , request])
 
   useEffect(() =>{
       getQuizList()
@@ -77,10 +79,7 @@ export const ProfilePage = () =>{
                     </div>
 
                     
-                    <div className="card-action">
-                    <a href="#">This is a link</a>
-                    <a href="#">This is a link</a>
-                    </div>
+                  
                 </div>
                 </div>
 

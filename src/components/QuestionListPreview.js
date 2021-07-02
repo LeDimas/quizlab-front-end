@@ -1,4 +1,4 @@
-import { useState ,useContext , useRef , useMemo} from "react"
+import { useState ,useContext , useRef } from "react"
 import {Redirect} from  'react-router-dom'
 import {useMessage} from '../hooks/message.hook'
 import { useHttp } from "../hooks/http.hook";
@@ -15,7 +15,7 @@ export const QuestionListPreview = ({quizDescription , quizName, questions , ret
 
     let isEditMode = useRef(false)
 
-    const {loading , error, request , clearError } = useHttp();
+    const {loading ,  request  } = useHttp();
 
     const [editInput , setEditInput] = useState(questions)
 
@@ -108,7 +108,7 @@ export const QuestionListPreview = ({quizDescription , quizName, questions , ret
             return
         }
 
-            const edited= editInput.find((ques) => ques.description === event.target.name)
+            // const edited= editInput.find((ques) => ques.description === event.target.name)
       
            
             // const data = await request(`api/quiz/${quizId}/question` , 'PUT'  ,

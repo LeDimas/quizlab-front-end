@@ -3,15 +3,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
 import { Tooltip , IconButton } from '@material-ui/core'
 import {Link} from 'react-router-dom'
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle'
-import {useState , useContext} from 'react'
+import {useState} from 'react'
+import {MyDialog} from '../components/Dialog'
 
-import { useHttp } from "../hooks/http.hook";
-import {AuthContext} from '../context/authContext';
+
 
 const styles ={
     roundedAvatar:{
@@ -30,23 +25,31 @@ export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
 
     
 
-    const auth = useContext(AuthContext)
-    const {loading , error, request , clearError } = useHttp();
-    const [dialogOpen , setDialogOpen] = useState(false)
+
+    const [deleteDialog , setDeleteDialog] = useState(false)
+    const [createGameDialog , setCreateGameDialog] = useState(false)
+
+    const handleOpenCreateGameDialog = () => {
+        setCreateGameDialog(true)
+    }
+
+    const handleCloseCreateGameDialog = () => {
+        setCreateGameDialog(false)
+    }
 
     const handleOpenDeleteDialog = ()=>{
-        setDialogOpen(true);
+        setDeleteDialog(true);
     }
 
     const handleCloseDeleteDialog = () => {
-        setDialogOpen(false);
+        setDeleteDialog(false);
     };
     
     const deleteQuizHandler = async () =>{
 
         try{
             console.log(quizId)
-            setDialogOpen(false);
+            setDeleteDialog(false);
             cbRemoveQuizFromQuizList(quizName)
 
             // const data = await request(`api/quiz` , 'DELETE'  ,
@@ -86,38 +89,23 @@ export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
                     </Tooltip>
 
                     <Tooltip title="Start game">
-                        <Link>
-                            <VideogameAssetIcon color='primary' style={{marginLeft:'20px'}} />
-                        </Link>
+                        <IconButton onClick={handleOpenCreateGameDialog} aria-label="edit" style={{ paddingTop:'0px' , backgroundColor:'transparent'}}>
+                                <VideogameAssetIcon color='primary' style={{marginLeft:'20px'}} />
+                        </IconButton>
                     </Tooltip>
                     
                     <Tooltip title="Delete quiz">
-                        <IconButton onClick={(handleOpenDeleteDialog)} aria-label="edit" style={{ paddingTop:'0px', marginLeft:'10px' , backgroundColor:'transparent'}}>
+                        <IconButton onClick={handleOpenDeleteDialog} aria-label="edit" style={{ paddingTop:'0px', marginLeft:'10px' , backgroundColor:'transparent'}}>
                             <DeleteIcon color='primary'  />
                         </IconButton>    
                     </Tooltip>
 
-                    <Dialog
-                        open={dialogOpen}
-                        onClose={handleCloseDeleteDialog}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <DialogTitle id="alert-dialog-title">{"Wanring"}</DialogTitle>
-                        <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Are you sure you want to delete this quiz? It will remove quiz permamently
-                        </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                        <button className="btn-small waves-effect  red darken-1" onClick={handleCloseDeleteDialog} color="primary">
-                            Cancel
-                        </button>
-                        <button className="btn-small waves-effect  green darken-1" onClick={deleteQuizHandler} color="primary" autoFocus>
-                            Agree
-                        </button>
-                        </DialogActions>
-                    </Dialog>
+                    <MyDialog dialogOpen={deleteDialog}  handleCloseDialog={handleCloseDeleteDialog} 
+                     title={'Warning'} body={' Are you sure you want to delete this quiz? It will remove quiz permamently'}  onAgree={deleteQuizHandler} />
+
+                    <MyDialog quizId={quizId} secondInputLabel={'Enter Maximal participant amount'} quizName={quizName}  inputMode={true} inputLabel={"Invitation code"} dialogOpen={createGameDialog}  handleCloseDialog={handleCloseCreateGameDialog} 
+                     title={'Game Create'} body={' Please enter invitation code and max available amount of people for this game'}  onAgree={() => {console.log('creating game')}} />
+             
 
                 </div>
                
