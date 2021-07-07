@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState , useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {useLocalStorage} from '../hooks/localStorage.hook'
-import {useBeforeUnload} from '../hooks/beforeUnload.hook'
+import { useBeforeunload } from 'react-beforeunload'
+import {useHistory} from 'react-router-dom'
+
 import {useMessage} from '../hooks/message.hook'
 
 import io from 'socket.io-client'
@@ -9,45 +11,42 @@ import io from 'socket.io-client'
 const SERVER_URL = 'http://localhost:5000'
 
 
-export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) => {
+export const useSocket = ({roomId , quizName  , timeOutCb}) => {
 
   const message = useMessage()
   
   const [players, setPlayers] = useState([])
-  
   const [questions, setQuestions] = useState(null)
-
   const [submited , setSubmited] = useState(false)
-
   const [started , setStarted] = useState(false)
-
   const [points , setPoints] = useState(null)
-
   const [place , setPlace] = useState(null)
+  let history = useHistory();
 
 
   const [userId] = useLocalStorage('userId')
-
   const [username] = useLocalStorage('userName')
-
-
- 
-
-  
-
-  
-
 
 
   const startTimerTimeRef = useRef(null)
   const socketRef = useRef(null)
   const currentQuestionRef = useRef(0)
 
-  const setCountDown = () =>{
-    setTimeout(()=>{console.log('Time Out!')} , 20000)
-  }
+
+
+  
+
+  useBeforeunload((event) => {
+    console.log('use before unload')
+    socketRef.current.emit('user:leave' , userId.userId)
+  });
+
+
 
   useEffect(() => {
+    if(!roomId){
+      history.push('/')
+    }
     socketRef.current = io(SERVER_URL, {
       query: { roomId }
     })
@@ -58,9 +57,7 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
     
       message(`${name} has joined game`);
 
-      
       const newState = players.concat(name)
-      console.log('One joined' , newState)
 
       setPlayers(newState)
       
@@ -68,12 +65,8 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
 
     socketRef.current.on('retrieveOtherPlayers', (otherPlayers) => {
 
-      console.log(otherPlayers)
-
       if(!otherPlayers.length<1){
-        console.log('Other',otherPlayers)
         const newState = players.concat(otherPlayers)
-        console.log(newState)
         setPlayers(newState)
       }
       
@@ -89,12 +82,11 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
     socketRef.current.on('question supply' , (suppliedQuestions)=>{
       setQuestions({suppliedQuestions , currentQuestion:suppliedQuestions[currentQuestionRef.current]})
       setStarted(true)
-      // setCountdownTimer()
-      setCountDown()
       startTimer()
     })
 
     socketRef.current.on('quiz points' , (correctAnwsered) =>{
+      console.log('points' , correctAnwsered  )
       setPoints(correctAnwsered)
     })
 
@@ -106,7 +98,6 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
     
 
     socketRef.current.on('result' , ()=>{
-      console.log('RESULT' )
       socketRef.current.emit('getPlace' , {username})
       
     })
@@ -142,8 +133,9 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
 
   const submitQuiz = (anwsers) =>{
     const timeResultInSec = endTimer()
-    console.log('Time result' ,timeResultInSec )
     const validAnwserObj = {anwsers:anwsers}
+    console.log('anwsers' , anwsers)
+    console.log(validAnwserObj)
 
     socketRef.current.emit('player submit',
        {userAnwsers:validAnwserObj , usernameId:userId.userId , roomId , quizName , timeResult:timeResultInSec })
@@ -168,6 +160,8 @@ export const useSocket = ({roomId , quizName , durationInMinutes , timeOutCb}) =
     console.log('Time result in seconds' ,seconds);
     return seconds;
   }
+
+
 
 
   return { players , startGame ,questions , submited , started , getNextQuestion , submitQuiz , points  , place }

@@ -36,12 +36,7 @@ export const useAuth = () => {
     } , [])
 
 
-    //to refactor
-    // const runLogoutTimer = (timer) => {
-    //     setTimeout(()=>{
-    //         logout()
-    //     } , timer)
-    // }
+  
 
 
 

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 
 export const useBeforeUnload = (value) => {
   const handleBeforeunload = (e) => {
+    console.log('trigger')
     let returnValue
     if (typeof value === 'function') {
       returnValue = value(e)

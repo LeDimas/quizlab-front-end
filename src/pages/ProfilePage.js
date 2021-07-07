@@ -23,7 +23,6 @@ export const ProfilePage = () =>{
   const cbRemoveQuizFromQuizList = (quizName) =>{
     const newState = quizList.filter((obj)=> obj._id.name !== quizName)
 
-
     if(newState.length>0){
         console.log('hello')
         setQuizList(newState)

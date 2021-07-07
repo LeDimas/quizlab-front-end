@@ -200,6 +200,10 @@ export const QuestionListPreview = ({quizDescription , quizName, questions , ret
         const quizId = data._id;
 
         //vpadlu 
+        // for await (const data of editInput.map(
+        //     question => request(`api/quiz/${quizName}/question` , 'POST' , {...question} , {Authorization: `Bearer ${auth.token}`}))) {
+        //         console.log(data)
+        //   }
         for await (const data of editInput.map(
             question => request(`api/quiz/${quizId}/question` , 'POST' , {...question} , {Authorization: `Bearer ${auth.token}`}))) {
                 console.log(data)

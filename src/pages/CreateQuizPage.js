@@ -2,6 +2,7 @@ import {useState } from 'react'
 import {useMessage} from '../hooks/message.hook'
 import { AnwserOptions } from '../components/AnwserOptions'
 import { QuestionListPreview } from '../components/QuestionListPreview'
+import { Prompt } from 'react-router-dom'
 
 
 
@@ -133,6 +134,13 @@ export const CreateQuizPage = () =>{
 
     return(
         <div className="row">
+
+        <Prompt
+                when={createQuiz}
+                message={
+                `Are you sure you want leave page? All changes will be unsafed!`
+                }
+            />
             
 
 

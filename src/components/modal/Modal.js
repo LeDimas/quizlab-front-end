@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
+import { withTranslation } from 'react-i18next';
 
 class Modal extends Component {
 
@@ -54,4 +55,4 @@ class Modal extends Component {
   }
 }
 
-export default Modal;
+export default withTranslation()(Modal);

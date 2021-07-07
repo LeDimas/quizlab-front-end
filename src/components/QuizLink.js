@@ -3,8 +3,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
 import { Tooltip , IconButton } from '@material-ui/core'
 import {Link} from 'react-router-dom'
-import {useState} from 'react'
+import {useState , useContext} from 'react'
 import {MyDialog} from '../components/Dialog'
+import { useHttp } from '../hooks/http.hook'
+import { AuthContext } from '../context/authContext'
 
 
 
@@ -25,7 +27,8 @@ export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
 
     
 
-
+    const {request , loading , error , clearError} = useHttp()
+    const auth = useContext(AuthContext)
     const [deleteDialog , setDeleteDialog] = useState(false)
     const [createGameDialog , setCreateGameDialog] = useState(false)
 
@@ -52,8 +55,8 @@ export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
             setDeleteDialog(false);
             cbRemoveQuizFromQuizList(quizName)
 
-            // const data = await request(`api/quiz` , 'DELETE'  ,
-            // { quizName : quizName} , {Authorization: `Bearer ${auth.token}` })
+            const data = await request(`api/quiz` , 'DELETE'  ,
+            { quizName : quizName} , {Authorization: `Bearer ${auth.token}` })
 
         }catch(e){
             console.log(e)

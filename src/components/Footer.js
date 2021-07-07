@@ -1,27 +1,39 @@
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next';
+
 export const Footer = () =>{
+
+  const { i18n } = useTranslation();
+  const [language, setLanguage] = useState('en');
+
+  const handleChangeLanguage = (event) => {
+    setLanguage(event.target.value);
+    i18n.changeLanguage(event.target.value);
+  };
+
     return(
-        <footer className="page-footer">
-          <div className="container">
-            <div className="row">
-              <div className="col l6 s12">
-                <h5 className="white-text">Footer Content</h5>
-                <p className="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
-              </div>
-              <div className="col l4 offset-l2 s12">
-                <h5 className="white-text">Links</h5>
-                <ul>
-                  <li><a className="grey-text text-lighten-3" href="#!">Link 1</a></li>
-                  <li><a className="grey-text text-lighten-3" href="#!">Link 2</a></li>
-                  <li><a className="grey-text text-lighten-3" href="#!">Link 3</a></li>
-                  <li><a className="grey-text text-lighten-3" href="#!">Link 4</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
+        <footer style={{marginTop:'700px'}} className="page-footer">
+
           <div className="footer-copyright">
             <div className="container">
-            © 2014 Copyright Text
-            <a className="grey-text text-lighten-4 right" href="#!">More Links</a>
+            © 2021 Copyright Dmitry Meckers
+            <a className="grey-text text-lighten-4 right" href="https://github.com/LeDimas">Github</a>
+            <FormControl style={{marginLeft:'30px'}} >
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={language}
+                            onChange={handleChangeLanguage}
+                            >
+                            <MenuItem value={'en'}>English</MenuItem>
+                            <MenuItem value={'ru'}>Russian</MenuItem>
+                            <MenuItem value={'lv'}>Latvian</MenuItem>
+                            <MenuItem value={'nl'}>Nederlands</MenuItem>
+                        </Select>
+              </FormControl>
             </div>
           </div>
         </footer>

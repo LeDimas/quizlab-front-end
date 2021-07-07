@@ -27,7 +27,7 @@ function App() {
         <div className="container">
           {routes}
         </div>
-        {/* <Footer/> */}
+        <Footer/>
       </BrowserRouter>
     </AuthContext.Provider>
     
