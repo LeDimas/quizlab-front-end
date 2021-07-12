@@ -1,21 +1,49 @@
 import {useState } from 'react';
+import {useMessage} from '../hooks/message.hook'
+import { useDispatch , useSelector } from 'react-redux'
+import { removeQuestionOption , addQuestion , createQuestionAsync , clearQuestionForm } from '../redux/quizCreateSlice'
 
-export const AnwserOptions = ({options , question , removeHandler , disabled , btnText , createQuestionHandler ,}) =>{
+export const AnwserOptions = ({ disabled , btnText , createAsync = false }) =>{
 
-    
+    const message = useMessage()
+    const quizRedux = useSelector((state) => state.quizCreate)
+    const dispatch = useDispatch()
     
     const [correctAnwser , setCorrectAnwser] = useState('');
     
     const createQuestionButtonHandler = () => {
-        createQuestionHandler (correctAnwser);
+            if(correctAnwser === ''){
+                message('You forgot to pick the anwser')
+                return
+            }
+
+            if(quizRedux.currentQuestionOptions.length < 2){
+                message('At least 2 options should be provided')
+                return
+            }
+
+            if(quizRedux.currentQuestionDesc.length < 4){
+                message('Question length can\'t be less than 4 symbols')
+                return
+            }
+
+            if(!createAsync)
+                dispatch(addQuestion(correctAnwser))
+            else
+               {
+                    dispatch(createQuestionAsync({quizId:quizRedux.quizId , description:quizRedux.currentQuestionDesc ,
+                        correctAnwser , options:quizRedux.currentQuestionOptions}))
+                    dispatch(clearQuestionForm())   
+                }
+
+                
+           setCorrectAnwser('')
     }
+
+const removeHandler = e =>  dispatch(removeQuestionOption(e.target.name))
     
-
-  if(options){ 
-    return(<ul> {options.map((option , i) => 
-
-            
-            
+  if(quizRedux.currentQuestionOptions.length>0){ 
+    return(<ul> {quizRedux.currentQuestionOptions.map((option , i) =>   
             <li key={i}>
                 <div className="row valign-wrapper   ">
                     <div className="col s7" style={{marginTop:'10px'}}>

@@ -3,10 +3,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
 import { Tooltip , IconButton } from '@material-ui/core'
 import {Link} from 'react-router-dom'
-import {useState , useContext} from 'react'
+import {useState , useEffect , useContext} from 'react'
 import {MyDialog} from '../components/Dialog'
-import { useHttp } from '../hooks/http.hook'
 import { AuthContext } from '../context/authContext'
+import { deleteQuiz } from '../redux/quizSlice'
+import { useDispatch , useSelector } from 'react-redux'
+import { useMessage } from '../hooks/message.hook';
 
 
 
@@ -23,14 +25,24 @@ const styles ={
 
 
 
-export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
+export const QuizLink = ({quizId , quizName }) => {
+
+
+
+const dispatch = useDispatch()
+const message = useMessage()
+
+const quizesStatus = useSelector(state => state.quiz.status)
+const errorMsg = useSelector(state=>state.quiz.error)
+
+const auth = useContext(AuthContext)
+const [deleteDialog , setDeleteDialog] = useState(false)
+const [createGameDialog , setCreateGameDialog] = useState(false)
 
     
-
-    const {request , loading , error , clearError} = useHttp()
-    const auth = useContext(AuthContext)
-    const [deleteDialog , setDeleteDialog] = useState(false)
-    const [createGameDialog , setCreateGameDialog] = useState(false)
+  useEffect(() => {
+    message(errorMsg)
+  }, [errorMsg, message])
 
     const handleOpenCreateGameDialog = () => {
         setCreateGameDialog(true)
@@ -48,21 +60,9 @@ export const QuizLink = ({quizId , quizName , cbRemoveQuizFromQuizList}) => {
         setDeleteDialog(false);
     };
     
-    const deleteQuizHandler = async () =>{
-
-        try{
-            console.log(quizId)
-            setDeleteDialog(false);
-            cbRemoveQuizFromQuizList(quizName)
-
-            const data = await request(`api/quiz` , 'DELETE'  ,
-            { quizName : quizName} , {Authorization: `Bearer ${auth.token}` })
-
-        }catch(e){
-            console.log(e)
-        }
-               
-            
+    const deleteQuizHandler = () =>{
+        setDeleteDialog(false);
+        dispatch(deleteQuiz(quizName))             
     }
 
     return(

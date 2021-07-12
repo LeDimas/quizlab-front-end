@@ -1,10 +1,12 @@
 
 import {Link} from 'react-router-dom'
 import {QuizLink} from '../components/QuizLink'
+import { useSelector } from 'react-redux'
+import { selectAllData } from '../redux/quizSlice'
 
-export const QuizList = ({quizes , cbRemoveQuiz}) => {
+export const QuizList = () => {
 
-    
+    const quizes = useSelector(selectAllData)    
 
     if(!quizes || quizes.message === 'no quizes')
     {
@@ -41,7 +43,7 @@ export const QuizList = ({quizes , cbRemoveQuiz}) => {
                            <ul className="collection">
                                {
                                    quizes.map((quizObj , i)=>{
-                                       return <QuizLink cbRemoveQuizFromQuizList={cbRemoveQuiz} key={i} quizId={`${quizObj._id.id}`} quizName={`${quizObj._id.name}`}/>
+                                       return <QuizLink key={i} quizId={`${quizObj._id.id}`} quizName={`${quizObj._id.name}`}/>
                                    })
                                }
                            </ul>

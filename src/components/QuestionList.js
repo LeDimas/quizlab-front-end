@@ -1,12 +1,16 @@
 import {QuestionEditComponent} from '../components/QuestionEditComponent'
+import { useSelector  } from 'react-redux'
 
-export const QuestionList = ({questions ,cbDeleteQuestion , cbUpdateQuestion}) => {
+
+export const QuestionList = () => {
+
+    const questions = useSelector(state => state.quizCreate.questions)
 
     return(
         <div>
-            {questions && questions.map((questionObj)=>{
+            {questions && questions.map((question)=>{
                 return(
-                    <QuestionEditComponent questionObj={questionObj} cbUpdateQuestion={cbUpdateQuestion} cbDeleteQuestion={cbDeleteQuestion} />
+                    <QuestionEditComponent  match={question.description} />
                 )
             })}
         </div>

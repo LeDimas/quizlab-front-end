@@ -1,29 +1,26 @@
 import {useState , useEffect} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle'
 import { AuthContext } from '../context/authContext'
-import { useHttp } from '../hooks/http.hook'
+import {MyDialog} from '../components/Dialog'
+import { useDispatch , useSelector } from 'react-redux';
+import { setQuestionEditFlag , changeQuestionDescription , removeQuestionAsync ,
+     selectQuestionByDesc , cancelQuestionChanges , changeQuestionOption , updateQuestionAsync } from '../redux/quizCreateSlice'
 
 
-export const QuestionEditComponent = ({questionObj , cbDeleteQuestion , cbUpdateQuestion}) =>{
+export const QuestionEditComponent = ({match}) =>{
 
     // const {token} = useContext(AuthContext)
-    const {request , loading , error , clearError} = useHttp()
+
+    const question = useSelector(state => selectQuestionByDesc(state , match))
+    const quizId = useSelector(state => state.quizCreate.quizId)
+    const errorMsg = useSelector(state => state.quizCreate.error)
+    const dispatch = useDispatch()
     
     const message = useMessage()
 
     useEffect(() => {
-      message(error)
-      clearError()
-    }, [error, message, clearError])
-
-    const [question , setQuestion] = useState({
-        description:questionObj.description , options:questionObj.alternatives , toEdit:false 
-    })
+      message(errorMsg)
+    }, [errorMsg, message])
 
     const [dialogOpen , setDialogOpen] = useState(false)
 
@@ -33,115 +30,62 @@ export const QuestionEditComponent = ({questionObj , cbDeleteQuestion , cbUpdate
 
     const handleCloseDeleteDialog = () => {
         setDialogOpen(false);
-    };
+    }
     
-    const handleDeleteQuestion = async () =>{
-
-        try{
-         
-            setDialogOpen(false);
-            cbDeleteQuestion(questionObj)
-
-     
-
-
-
-        }catch(e){
-            console.log(e)
-        }
-               
-            
+    const handleDeleteQuestion = () =>{
+        setDialogOpen(false);
+        dispatch(removeQuestionAsync({quizId , description: question.description}))
     }
 
-
-    console.log(question)
- 
-
     const handleEditOn = () =>{
-       setQuestion({...question , toEdit:true  })
+       dispatch(setQuestionEditFlag(question.description))
     }
 
     const handleEditOff = () =>{
-        //IF EMPTY
-        setQuestion({description:questionObj.description , options:questionObj.alternatives , toEdit:false})
+        dispatch(cancelQuestionChanges(question.description))
     }
 
     const handleChangeInputField = event =>{
-
-      
-
-        const changedOptionArray = question.options.map((option) => {
-            if(option.text === event.target.name){
-                
-                // const myObj = {description:question.description , toEdit:true , }
-            
-                return {...option , text:event.target.value}
-            }else{
-                return {...option}
-            }
-        })        
-
-        const newState = {...question , options:changedOptionArray}
-        // console.log('New state',newState)
-        setQuestion(newState)
+        dispatch(changeQuestionOption({description:question.description , id:event.target.id , value:event.target.value}))
     }
 
-
-    const handleDescriptionChange = async (event) =>{
-        setQuestion({...question , description:event.target.value})
+    const handleDescriptionChange = event =>{
+        dispatch(changeQuestionDescription({value:event.target.value , name:question.description}))
     }
 
-    const handleApply = async () =>{
-
-        let error ='';
-        
-
+    const handleApply = () =>{
         if(question.description.length < 4){
             message('Question is to short!')
             return
         }
-
-      if(question.options.some((option) => option.text.length < 1)){
-          error = 'Anwser cannot be empty!'
-      }
-
-        if(error !== ''){
-            message(error)
-            return
-        }
-        console.log('requesting')
-        
-        const updateData = {description:question.description , alternatives:question.options , oldDescription:questionObj.description}
-        
-        cbUpdateQuestion(updateData , questionObj.quiz)
-      
-        setQuestion({...question, toEdit:false})
-
-
-
-
-
+        if(question.alternatives.some((option) => option.text.length < 1)){
+          message( 'Anwser cannot be empty!')
+          return
+       }      
+       const payload = {description: question.description , oldDescription: question.initialQuestion , alternatives:question.alternatives}
+           
+       dispatch(updateQuestionAsync({payload , quizId})) 
     }
    
 
-
-
     if(question.toEdit){
         return(
-            <div key={questionObj._id} className="row">
+            <div
+             key={question._id}
+              className="row">
+
                 <div className="input-field col s6 row">
-                    <input  name='description' type="text" onChange={handleDescriptionChange} className="validate"  value={question.description} />
+                    <input  name='description' type="text"
+                     onChange={handleDescriptionChange} 
+                     className="validate"  value={question.description} />
                 </div>
                        
                         <div>
-                            {question.options.map((option) => {
+                            {question.alternatives.map((option) => {
                                 return(
                                     <div className="row">
-
-
                                         <div className="input-field col s5">
-                                        <input name={option.text} placeholder="Placeholder" id="first_name" type="text" onChange={handleChangeInputField} class="validate" value={option.text}/>
-                                       
+                                        <input id={option._id}  name={question.description} placeholder="Type your question option"  type="text" onChange={handleChangeInputField} className="validate" value={option.text}/>                                      
                                         </div>
                                     </div>
                                 )
@@ -149,29 +93,28 @@ export const QuestionEditComponent = ({questionObj , cbDeleteQuestion , cbUpdate
                         </div>
 
                         <button style={{marginTop:'10px'}} onClick={handleApply} className="btn-small waves-effect  green darken-1" > Apply </button>
-                        <button style={{marginTop:'10px' , marginLeft:'15px'}} onClick={handleEditOff} className="btn-small waves-effect  red darken-1" > Cancel </button>  
+                        <button style={{marginTop:'10px' , marginLeft:'15px'}} name={question.description}
+                        onClick={handleEditOff} 
+                        className="btn-small waves-effect  red darken-1" > Cancel </button>  
 
                      
             </div>
         )
     }
 
-    
-                                                                   
-                                                                    
-                                                              
+                                                         
     if(!question.toEdit)
     return(
   
         <div key={question}>
                         <h5 style={{marginTop:'15px'}}>{question.description}</h5>
                         <div>
-                            {question.options.map((option ,i) => {
+                            {question.alternatives.map((option ,i) => {
                                 return(
                                     <div key={i}>
 
                                         <label >
-                                            <input name={question.description} checked={option.isCorrect}  type="radio"  />
+                                            <input name={question.description} checked={option.isCorrect} readOnly={true}  type="radio"  />
                                             <span className="dark-text">{option.text} </span>
                                         </label>
                                     </div>
@@ -182,27 +125,10 @@ export const QuestionEditComponent = ({questionObj , cbDeleteQuestion , cbUpdate
                         <button name={question.description} style={{marginTop:'10px'}} onClick={handleEditOn} className="btn-small waves-effect  green darken-1" > Edit </button>
                         <button onClick={handleOpenDeleteDialog} style={{marginTop:'10px' , marginLeft:'15px'}} className="btn-small waves-effect  red darken-1" > Delete </button>  
                         
-                        <Dialog
-                        open={dialogOpen}
-                        onClose={handleCloseDeleteDialog}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <DialogTitle id="alert-dialog-title">{"Wanring"}</DialogTitle>
-                        <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Are you sure you want to delete this quiz? It will remove quiz permamently
-                        </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                        <button className="btn-small waves-effect  red darken-1" onClick={handleCloseDeleteDialog} color="primary">
-                            Cancel
-                        </button>
-                        <button className="btn-small waves-effect  green darken-1" onClick={handleDeleteQuestion} color="primary" autoFocus>
-                            Agree
-                        </button>
-                        </DialogActions>
-                    </Dialog>
+                        <MyDialog  dialogOpen={dialogOpen} onAgree={handleDeleteQuestion} title={'Warning'}
+                         body={'Are you sure you want to delete this quiz? It will remove quiz permamently'}
+                         handleCloseDialog={handleCloseDeleteDialog} />
+                
             </div>
     )
 }

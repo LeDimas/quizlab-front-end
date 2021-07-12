@@ -1,105 +1,48 @@
-import {useState , useCallback , useContext , useEffect} from 'react'
-import {useHttp} from '../hooks/http.hook'
+import {useState  , useContext , useEffect} from 'react'
 import {AuthContext} from '../context/authContext'
 import {Loader} from '../components/Loader'
 import {useParams} from 'react-router-dom'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 import {QuestionList} from '../components/QuestionList'
-import {axios} from '../axios'
+
 import {CreateQuestion} from '../components/CreateQuestion'
 import {Link} from 'react-router-dom'
+import { useSelector , useDispatch } from 'react-redux'
+import { fetchQuiz } from '../redux/quizCreateSlice'
+import { useMessage } from '../hooks/message.hook'
+
 
 
 
 export const QuizManagmentPage = () =>{
     const {token} = useContext(AuthContext)
-    const {request , loading} = useHttp()
-    const [quiz , setQuiz] = useState(null)
     const quizId = useParams().quizId
     const [createNew , setCreateNew] = useState(false)
 
-    const getQuiz = useCallback(async () => {
-        try{
-           const fetchedQuiz =  await request(`/api/quiz/${quizId}` , 'GET' , null ,{
-                Authorization: `Bearer ${token}`
-            })
 
-            
-
-            setQuiz(fetchedQuiz)
-            console.log(fetchedQuiz)
-        }catch(e){
-
-        }
-    } ,[token , quizId , request])
-
-    useEffect(()=>{
-        getQuiz()
-    },[getQuiz])
-
-    const cbUpdateQuestion = async (updateData , quizId) =>{
-
-      
-        try{
-            const response = await axios.put(`api/quiz/${quizId}/question` , {description:updateData.description , oldDescription:updateData.oldDescription , alternatives:updateData.alternatives} , {
-                headers: {
-                  Authorization: 'Bearer ' + token 
-                }})
-            console.log(response)
-        
-
-        }catch(e){
-            console.log(e)
-        }
-
-
-
-    }
-
-    const handleOpenQuestionForm = () =>{
-        setCreateNew(true)
-    }
-
-         
-    const cbCreateQuestion = (response) =>{
-        setCreateNew(false)
-        setQuiz(response.data)
-
-        console.log(response.data)
-    }
-
+    const message = useMessage()
+    const dispatch = useDispatch()
+    const quizStatus = useSelector(state => state.quizCreate.status)
+    const quiz = useSelector(state => state.quizCreate)
+    const errorMsg = useSelector(state=>state.quizCreate.error)
   
+    useEffect(() => {
+        if(quizStatus === 'idle')
+            dispatch(fetchQuiz(quizId))
+    } , [quizStatus ,dispatch ])
+
+    useEffect(() => {
+        message(errorMsg)
+      }, [errorMsg, message])
 
 
-    // todo:make forbidden view
-
-
-    if(loading){
+    if(quizStatus === 'idle' || quizStatus !== 'succeeded'){
         return <Loader/>
     }
 
-    const cbDeleteQuestion = async (callbAckQuestion) => {
-
-        try{
-            
-        const newQuestionState =  quiz.questions.filter((questObj) => questObj.description !== callbAckQuestion.description)
-        setQuiz({...quiz , questions:newQuestionState})
-
-        console.log(quiz)
-
-
-       const response = await axios.delete(`api/quiz/${callbAckQuestion.quiz}/question` ,
-       { data: { questionDescription: callbAckQuestion.description }, headers: { "Authorization":'Bearer ' + token  } }  )
-
-        console.log(response)
-
-        }catch(e){
-            console.log(e)
-        }
-
-    }
-
+    if(quizStatus === 'failed')
+      {  return(<h3>Something went wrong on server</h3>) }
 
 
     return(
@@ -109,56 +52,50 @@ export const QuizManagmentPage = () =>{
             </h2>
            
            
-            {!loading && quiz && 
+            {quizStatus === 'succeeded'  && 
 
 
-                <div class="col s12 m4">
-                    <div class="card blue-grey lighten-2">
-                        <div class="card-content black-text">
+                <div className="col s12 m4">
+                    <div className="card blue-grey lighten-2">
+                        <div className="card-content black-text">
                             <span>Quiz name</span>
-                            <span class="card-title">{quiz.name}<IconButton style={{display:'inline-block'}} aria-label="edit"><EditIcon/></IconButton></span>   
+                            <span className="card-title">{quiz.quizName}<IconButton style={{display:'inline-block'}} aria-label="edit"><EditIcon/></IconButton></span>   
                         </div>
                     </div>
                 </div>
                 }
 
-          {!loading && quiz && 
-              <div class="col s12 m6">
-                <div class="card blue-grey lighten-2">
-                    <div class="card-content black-text">
+          {quizStatus === 'succeeded' && 
+              <div className="col s12 m6">
+                <div className="card blue-grey lighten-2">
+                    <div className="card-content black-text">
                         <span>Quiz name</span>
-                        <span class="card-title">{quiz.description}<IconButton style={{display:'inline-block'}} aria-label="edit"><EditIcon/></IconButton></span>   
+                        <span className="card-title">{quiz.quizDesc}<IconButton style={{display:'inline-block'}} aria-label="edit"><EditIcon/></IconButton></span>   
                     </div>
                 </div>
           </div>
           }
 
-          {!loading && quiz && 
-            <div class="col s8 m8 offset-s2 offset-m2">
-                <div class="section">
+          {quizStatus === 'succeeded' && 
+            <div className="col s8 m8 offset-s2 offset-m2">
+                <div className="section">
                     <h5>Questions</h5>
                 </div>
-                <div class="divider"/>
-                <QuestionList cbUpdateQuestion={cbUpdateQuestion} cbDeleteQuestion={cbDeleteQuestion} questions={quiz.questions}/>
+                <div className="divider"/>
+                <QuestionList  />
             </div>
           }
-        {
-            !createNew ? <button style={{marginTop:'30px' , marginLeft:'400px'}} onClick={handleOpenQuestionForm} className="btn-small waves-effect  green darken-1" > Add another question </button>   : <span></span>
-        }
 
+            { createNew && <CreateQuestion/> }
+      
+            <button style={{marginTop:'30px' , marginLeft:createNew ? '407px' : '400px'}} onClick={()=>{setCreateNew(!createNew)}}
+             className="btn-small waves-effect  green darken-1" > {!createNew?'Add another question ':'Close quesiton form'}</button>  
         
-                
-        {
-            createNew ? <CreateQuestion cbCreateQuestion={cbCreateQuestion} quizId={quizId} /> : <span></span>
-        }
+               
 
         <Link to="/profile">
             <button style={{width:'190px',marginTop:'30px' , marginLeft:'405px'}} className="btn-small waves-effect  blue darken-1" > Back to Profile </button> 
         </Link>
-
-
-
-
         </div>
     )
 }
