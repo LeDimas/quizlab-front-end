@@ -1,7 +1,6 @@
-import {useState , useContext} from 'react'
+
 import {useMessage} from '../hooks/message.hook'
 import { AnwserOptions } from '../components/AnwserOptions'
-import {AuthContext} from '../context/authContext';
 import {setCurrentQuestionDesc, addQuestionOption, setCurrentQuestionOptionText } from '../redux/quizCreateSlice'
 import { useDispatch , useSelector } from 'react-redux'
 
@@ -10,7 +9,7 @@ export const CreateQuestion = () => {
 
     const message = useMessage();
 
-    const auth = useContext(AuthContext)
+    
 
     const dispatch = useDispatch()
     const quizRedux = useSelector((state) => state.quizCreate)

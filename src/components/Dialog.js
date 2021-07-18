@@ -13,7 +13,7 @@ import {useMessage} from '../hooks/message.hook'
 import {Link} from 'react-router-dom'
 
 
-export const MyDialog = ({quizId , quizName ,dialogOpen ,inputLabel ,twoInputs=true, secondInputLabel , handleCloseDialog , title ,body , onAgree ,  inputMode=false}) => {
+export const MyDialog = ({quizId  ,dialogOpen ,inputLabel ,twoInputs=true, secondInputLabel , handleCloseDialog , title ,body , onAgree ,  inputMode=false}) => {
 
     const auth = useContext(AuthContext)
     const [fetched , setFetched] = useState(null)
@@ -57,7 +57,6 @@ export const MyDialog = ({quizId , quizName ,dialogOpen ,inputLabel ,twoInputs=t
             }})
         
         setLoading(true)
-        console.log(response)
         setLoading(false)
         setFetched(response.data)
   

@@ -1,175 +1,179 @@
-import {useState , useCallback , useContext , useEffect} from 'react'
-import {useHttp} from '../hooks/http.hook'
-import {AuthContext} from '../context/authContext'
-import {Loader} from '../components/Loader'
-import {useParams} from 'react-router-dom'
+import { useState, useCallback, useContext, useEffect } from 'react'
+import { useHttp } from '../hooks/http.hook'
+import { AuthContext } from '../context/authContext'
+import { Loader } from '../components/Loader'
+import { useParams } from 'react-router-dom'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
-import {QuestionList} from '../components/QuestionList'
-import {CreateQuestion} from '../components/CreateQuestion'
-import {Link ,Redirect} from 'react-router-dom'
-import {useMessage} from '../hooks/message.hook'
+import { QuestionList } from '../components/QuestionList'
+import { CreateQuestion } from '../components/CreateQuestion'
+import { Link, Redirect } from 'react-router-dom'
+import { useMessage } from '../hooks/message.hook'
+import { useSelector , useDispatch } from 'react-redux'
+import { fetchGame } from '../redux/gameSlice'
 
 
 
-export const QuizEnterRoomPage = () =>{
+export const QuizEnterRoomPage = () => {
 
+    console.log('hi?')
     const message = useMessage()
-    const {token , userName} = useContext(AuthContext)
-    const {request , loading} = useHttp()
-    const [invitationCode , setInvitationCode] = useState('')
-    const [game , setGame] = useState(null)
-    const [fetchedResult , setFetchedResult] = useState(null)
+    const dispatch = useDispatch()
+    const game = useSelector((state)=>state.game)
+    const {status , error} = game
     const gameLink = useParams().gameLink
 
-    const getQuiz = useCallback(async () => {
-        try{
+    // const { token, userName } = useContext(AuthContext)
+    // const { request, loading } = useHttp()
+    // const [game, setGame] = useState(null)
+    // const [fetchedResult, setFetchedResult] = useState(null)
 
-           const fetchedGame =  await request(`/api/game/joinGame/${gameLink}` , 'GET' , null ,{
-                Authorization: `Bearer ${token}`
-            })
-            console.log(fetchedGame)
+    const [invitationCode, setInvitationCode] = useState('')
 
-            setGame(fetchedGame)
-        }catch(e){
-            message(e)
-        }
-    } ,[token , gameLink , request , message])
 
-    useEffect(()=>{
-        getQuiz()
-    },[getQuiz])
+    // useEffect(() => {
+    //     message(error)
+    // },[error , message])
 
-    const handleEnterRoom = async () =>{
-        try{
-
-           const response =  await request(`/api/game/joinGame/${gameLink}` , 'POST' , {invitationCode:invitationCode} ,{
-                Authorization: `Bearer ${token}`
-            })
-
-            console.log(response)
-
-            setFetchedResult(response)
-
-        }catch(e){
-            message(e)
-        }
-    }
-
-    const handleChange = event =>{
-        setInvitationCode(event.target.value)
-    }
-
-    if(fetchedResult && fetchedResult.status === 'OK'){
-        return <Redirect to={{
-            pathname: `/room/${gameLink}`,
-            state: { fetchedResult }
-          }}/>
-    } 
+    // useEffect(() => {
+    //     if(status === 'idle')
+    //         dispatch(fetchGame(gameLink))
+    // }, [gameLink])
 
 
 
-    if(game)
-        if(game.isStarted)
-        return(
-            <div>
-            <h1>
-                Quiz Game Page
-            </h1> 
-            <div className="row">
+    // const handleEnterRoom = async () => {
+    //     try {
+
+    //         const response = await request(`/api/game/joinGame/${gameLink}`, 'POST', { invitationCode: invitationCode }, {
+    //             Authorization: `Bearer ${token}`
+    //         })
+
+    //         console.log(response)
+
+    //         setFetchedResult(response)
+
+    //     } catch (e) {
+    //         message(e)
+    //     }
+    // }
+
+    const handleChange = event => setInvitationCode(event.target.value)
+    
+
+    // if (fetchedResult && fetchedResult.status === 'OK') {
+    //     return <Redirect to={{
+    //         pathname: `/room/${gameLink}`,
+    //         state: { fetchedResult }
+    //     }} />
+    // }
+
+
+
+    if (game)
+        if (game.isStarted)
+            return (
+                <div>
+                    <h1>
+                        Quiz Game Page
+                    </h1>
+                    <div className="row">
                         <div className="col s12 m10 offset-m1">
                             <div className="card blue-grey darken-1">
-                            <div className="card-content white-text">
-                                <span className="center-align card-title">Quiz "{game.quiz.name}"</span>
+                                <div className="card-content white-text">
+                                    <span className="center-align card-title">Quiz "{game.quiz.name}"</span>
 
-                                <div className="row">
-                                    <div className="col s12 m10 offset-m2">
-                                        <p>Oops</p>
-                                        <p>Game is already started so unfortunately you can't join the party :( </p>
+                                    <div className="row">
+                                        <div className="col s12 m10 offset-m2">
+                                            <p>Oops</p>
+                                            <p>Game is already started so unfortunately you can't join the party :( </p>
+                                        </div>
                                     </div>
+
+
+
+
+
+                                    <div className="row">
+                                        <div className="col m6 s6 offset-m5 offset-s3" >
+                                            <Link to="/profile">
+                                                <button style={{ marginTop: '30px', width: '150px' }} className="btn-small waves-effect  blue darken-1" > Back to Profile </button>
+                                            </Link>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
 
 
-                           
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+
+
+    if (game)
+        if (!game.isStarted)
+            return (
+                <div>
+                    <h1>
+                        Quiz Game Page
+                    </h1>
 
                     <div className="row">
-                        <div className="col m6 s6 offset-m5 offset-s3" >
-                            <Link to="/profile">
-                                <button style={{marginTop:'30px' , width:'150px'}} className="btn-small waves-effect  blue darken-1" > Back to Profile </button> 
-                            </Link>
-                        </div>
-
-                    </div>
-                    
-                            </div>
-
-
-                      
-                            </div>
-                        </div>
-                        </div>
-                        </div>    
-        )
-
-
-    if(game)
-     if(!game.isStarted)
-        return(
-            <div>
-            <h1>
-                Quiz Game Page
-            </h1>         
-                       
-                        <div className="row">
                         <div className="col s12 m10 offset-m1">
                             <div className="card blue-grey darken-1">
-                            <div className="card-content white-text">
-                                <span className="center-align card-title">Quiz "{game.quiz.name}"</span>
+                                <div className="card-content white-text">
+                                    <span className="center-align card-title">Quiz "{game.quiz.name}"</span>
 
-                                <div className="row">
-                                    <div className="col s12 m3 offset-m2 card green darken-3">
-                                        <p>Quiz description:</p>
-                                        <p>{game.quiz.description}</p>
+                                    <div className="row">
+                                        <div className="col s12 m3 offset-m2 card green darken-3">
+                                            <p>Quiz description:</p>
+                                            <p>{game.quiz.description}</p>
+                                        </div>
                                     </div>
+
+
+
+                                    <div className="row">
+                                        <div style={{ marginLeft: '150px', minWidth: '500px' }} className="input-field col s6">
+                                            <input name="invitation_code" onChange={handleChange} value={invitationCode} placeholder="Invitation code" id="invitation_code" type="text" className="validate" />
+                                            <span className="helper-text">Invitation code</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="row">
+                                        <div className="col m6 s6 offset-m4 offset-s3" >
+                                            <button
+                                            //  onClick={handleEnterRoom}
+                                              style={{ marginTop: '30px' }} className="btn-small waves-effect  green darken-1" > Enter room </button>
+                                            <Link to="/profile">
+                                                <button style={{ marginTop: '30px', width: '150px', marginLeft: '20px' }} className="btn-small waves-effect  blue darken-1" > Back to Profile </button>
+                                            </Link>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
 
 
-                                <div className="row">
-                                    <div style={{marginLeft:'150px' , minWidth:'500px'}} className="input-field col s6">
-                                        <input name="invitation_code" onChange={handleChange} value={invitationCode} placeholder="Invitation code" id="invitation_code" type="text" className="validate"/>
-                                        <span className="helper-text">Invitation code</span>
-                                    </div>
-                                </div>
-
-                    <div className="row">
-                        <div className="col m6 s6 offset-m4 offset-s3" >
-                            <button onClick={handleEnterRoom} style={{marginTop:'30px'}} className="btn-small waves-effect  green darken-1" > Enter room </button> 
-                            <Link to="/profile">
-                                <button style={{marginTop:'30px' , width:'150px' ,  marginLeft:'20px'}} className="btn-small waves-effect  blue darken-1" > Back to Profile </button> 
-                            </Link>
+                            </div>
                         </div>
-
                     </div>
-                    
-                            </div>
+                </div>
+            )
 
 
-                      
-                            </div>
-                        </div>
-                        </div>
-                        </div>
-        )
-
-
-    return(
+    return (
         <div>
             <h1>
                 Quiz Game Page
             </h1>
-            {(!game && loading) && <Loader/>}
+            {/* {(!game && (status === 'idle' || status === 'loading')) && <Loader />} */}
+            <h1>Loading</h1>
         </div>
     )
 }

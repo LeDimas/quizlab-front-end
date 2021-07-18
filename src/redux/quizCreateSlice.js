@@ -1,19 +1,13 @@
 import { createSlice , createAsyncThunk} from '@reduxjs/toolkit'
 import {axios} from '../axios'
-
-
-// let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDg2NjBlYTQ0MjYxMzBkYzRhNWYxOCIsInJvbGVzIjpbIlVzZXIiXSwiaWF0IjoxNjI2MDk3MjE0LCJleHAiOjE2MjYxODM2MTR9.S9kcpnyLy5fWMRsI7zytj9dJ1-3oLb7UkYwBqBd3voA'
-
-const {token} = JSON.parse(localStorage.getItem('userData')) 
+import QuizService from '../services/quizService'
 
 
 
 export const fetchQuiz = createAsyncThunk('quizCreate/fetchQuiz', 
         async (quizId) => {
             try {
-                const response = await axios.get(`/api/quiz/${quizId}` ,{
-                    headers: {Authorization: 'Bearer ' + token }
-                })
+                const response = await QuizService.fetchQuizById(quizId)
                 return response.data
             } catch (error) {
                 console.log(error)
@@ -22,41 +16,36 @@ export const fetchQuiz = createAsyncThunk('quizCreate/fetchQuiz',
 
 export const updateQuestionAsync = createAsyncThunk('quizCreate/updateQuestion' , 
         async({quizId , payload})=>{
-
-                const response = await axios.put(`api/quiz/${quizId}/question` , payload
-                  , {
-                headers: {
-                  Authorization: 'Bearer ' + token 
-                }})
-
-                return response.data
+                try {
+                    const response = await QuizService.updateQuestionAsync({quizId , payload})
+                    return response.data
+                } catch (error) {
+                    console.log(error)
+                }
+               
         })
 
 export const removeQuestionAsync = createAsyncThunk('quizCreate/deleteQuestion' ,
 
         async({quizId , description}) => {
-                await axios.delete(`api/quiz/${quizId}/question` ,
-               { data: { questionDescription: description }, headers: { "Authorization":'Bearer ' + token  } }  )
-
-        return description
+            try {
+                await QuizService.removeQuestionAsync({quizId , description})
+                return description
+            } catch (error) {
+                console.log(error)
+            }
+     
         })
 
 export const createQuestionAsync = createAsyncThunk('quizCreate/createQuestion' , 
         async({quizId , description , correctAnwser , options }) => {
 
-
-            const alternatives = options.map((option) => {
-                return {text:option, isCorrect: option === correctAnwser}
-            })
-
-            const response = await axios.post(`api/quiz/${quizId}/question`  , {description , alternatives} ,  {
-                headers: {
-                  Authorization: 'Bearer ' + token
-                }})
-
-            console.log(response.data)
-
-            return response.data
+            try{
+                const response = await QuizService.createQuestionAsync({quizId , description , correctAnwser , options })
+                return response.data
+            }catch(e){
+                console.log(e)
+            }
         })
 
 

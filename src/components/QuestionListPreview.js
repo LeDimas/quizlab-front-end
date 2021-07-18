@@ -1,8 +1,6 @@
 import { useState ,useContext , useRef , useEffect} from "react"
 import {Redirect} from  'react-router-dom'
 import {useMessage} from '../hooks/message.hook'
-import { useHttp } from "../hooks/http.hook";
-import {AuthContext} from '../context/authContext';
 import Modal from '../components/modal/Modal'
 import {Loader} from '../components/Loader'
 import {clearState,setQuestionEditFlag,removeQuestion } from '../redux/quizCreateSlice'
@@ -21,7 +19,7 @@ export const QuestionListPreview = () => {
         message(errorMsg)
     }, [errorMsg, message])
 
-    const auth = useContext(AuthContext)
+
 
     let isEditMode = useRef(false)
     const [emptyQuiz , setEmptyQuiz] = useState(false)

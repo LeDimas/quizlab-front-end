@@ -1,6 +1,5 @@
 import {useState , useEffect} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import { AuthContext } from '../context/authContext'
 import {MyDialog} from '../components/Dialog'
 import { useDispatch , useSelector } from 'react-redux';
 import { setQuestionEditFlag , changeQuestionDescription , removeQuestionAsync ,
@@ -8,8 +7,6 @@ import { setQuestionEditFlag , changeQuestionDescription , removeQuestionAsync ,
 
 
 export const QuestionEditComponent = ({match}) =>{
-
-    // const {token} = useContext(AuthContext)
 
     const question = useSelector(state => selectQuestionByDesc(state , match))
     const quizId = useSelector(state => state.quizCreate.quizId)

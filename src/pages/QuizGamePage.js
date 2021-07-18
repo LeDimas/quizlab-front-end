@@ -36,6 +36,8 @@ export const QuizGamePage = (props) =>{
     const [timeOutBeforeStart , setTimeoutBeforeStat] = useState(11)
     const [startTimeoutBeforeGame , setStartTimeoutBeforeGame] = useState(false)
 
+    console.log('fetched' ,fetched)
+
 
     useEffect(()=>{
         if(started){

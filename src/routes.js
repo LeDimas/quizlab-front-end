@@ -6,9 +6,11 @@ import {QuizManagmentPage} from './pages/QuizMagmentPage';
 import {RegisterPage} from './pages/RegisterPage';
 import {CreateQuizPage} from './pages/CreateQuizPage';
 import {QuizGamePage} from './pages/QuizGamePage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PasswordResetPage from './pages/PasswordResetPage'
 
-export const useRoutes = isAuthenticated =>{
-    if(isAuthenticated){
+export const useRoutes = isAuth =>{
+    if(isAuth){
         return(
             <Switch>
                 <Route path="/profile" exact>
@@ -33,6 +35,12 @@ export const useRoutes = isAuthenticated =>{
         <Switch>
             <Route path="/" exact>
                 <LoginPage/>
+            </Route>
+            <Route path="/forgotPassword" exact>
+                <ForgotPasswordPage/>
+            </Route>
+            <Route path="/resetPassword/:userId/:token" exact>
+                <PasswordResetPage  />
             </Route>
             <Route path="/register" exact>
                 <RegisterPage/>

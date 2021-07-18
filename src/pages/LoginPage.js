@@ -1,13 +1,15 @@
-import {useContext, useEffect, useState} from 'react'
-import {useHttp} from '../hooks/http.hook'
+import { useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import { useMessage } from '../hooks/message.hook'
-import {AuthContext} from '../context/authContext'
+import { useDispatch , useSelector } from 'react-redux'
+import { login } from '../redux/userSlice'
 
 export const LoginPage = () =>{
-    const auth = useContext(AuthContext)
+
+    const userState = useSelector((state)=> state.user)
+    const error = userState.error
+    const dispatch = useDispatch()
     const message = useMessage();
-    const {loading , error , request , clearError } = useHttp();
 
     const styles = {
         button:{
@@ -18,29 +20,25 @@ export const LoginPage = () =>{
 
     useEffect(()=>{
         message(error)
-        clearError()
-    } ,[clearError , message , error])
+    } ,[ message , error])
 
    
 
 
 
     const [form,setForm] = useState({
-        username:"" , password:""
+        email:"" , password:""
     })
 
     const changeHandler = event => {
         setForm({...form , [event.target.name] : event.target.value})
     }
     
-    const loginHandler = async() => {
+    const loginHandler = () => {
         try{
-            const data = await request('/api/auth/login' , 'POST' , {...form})
-
-        
-            auth.login(data.token , data.userId , data.username)
+            dispatch(login({password:form.password , email:form.email}))
         }catch(e){
-
+            console.log(e)
         }
     } 
 
@@ -57,9 +55,9 @@ export const LoginPage = () =>{
                     <span className="card-title">Authorization</span>
 
                         <div className="input-field ">
-                            <input  id="username" type="text" className="validate" name="username"
-                               value={form.username} onChange={changeHandler}/>
-                                <label htmlFor="username">Username</label>
+                            <input  id="email" type="text" className="validate" name="email"
+                               value={form.email} onChange={changeHandler}/>
+                                <label htmlFor="email">email</label>
                         </div>
 
                         <div className="input-field ">
@@ -71,13 +69,14 @@ export const LoginPage = () =>{
                     </div>
               
                         <div className="center-align">
-                            <button className="btn red darken-5" style={styles.button} disabled={loading}
+                            <button className="btn red darken-5" style={styles.button}
+                            //  disabled={loading}
                             onClick={loginHandler} >Login</button>
                         </div>
 
                         <div className="center-align">
                             Not registered? <Link to="/register"> Sign up! </Link>
-                        
+                            <p><Link to="/forgotPassword">Forgot Password?</Link> </p>
                         </div>
                         <br/>
                        

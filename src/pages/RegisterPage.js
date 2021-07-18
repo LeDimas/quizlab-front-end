@@ -2,12 +2,16 @@ import {useState , useEffect} from 'react'
 import {useMessage} from '../hooks/message.hook'
 import {useHttp} from '../hooks/http.hook'
 import {Link , useHistory} from 'react-router-dom'
+import {useDispatch , useSelector} from 'react-redux'
+import { registration } from '../redux/userSlice'
 
 export const RegisterPage = () =>{
 
+    const dispatch = useDispatch()
+    const error = useSelector((state)=>state.user.error)
+
     let history = useHistory();
     const message = useMessage();
-    const {loading , error, request , clearError} = useHttp();
 
     const styles = {
         button:{
@@ -22,21 +26,16 @@ export const RegisterPage = () =>{
 
     useEffect(() =>{
         message(error)
-        clearError()
-    } , [error , message , clearError])
+    } , [error , message ])
 
-    const changeHandler = event => {
-        setForm({...form , [event.target.name] : event.target.value})
-    }
+    const changeHandler = event => setForm({...form , [event.target.name] : event.target.value})
     
-    const registerHandler = async() => {
-        try{
-             await request('/api/auth/registration' , 'POST' , {...form})
-            history.push('/')
-        }catch(e){
-          
-        }
-    } 
+    const registerHandler =() => 
+    {
+        dispatch(registration({...form}))
+        if(!error) history.push('/')
+    }   
+    
 
     return(
         <div>
@@ -78,7 +77,9 @@ export const RegisterPage = () =>{
               
                         <div className="center-align">
                             <button className="btn red darken-5" style={styles.button} 
-                                onClick={registerHandler} disabled={loading}> Register</button>
+                                onClick={registerHandler}
+                                //  disabled={loading}
+                                 > Register</button>
                         </div>
 
                         <div className="center-align">

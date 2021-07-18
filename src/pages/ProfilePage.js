@@ -1,8 +1,6 @@
 
-import { useContext, useEffect, useState} from 'react'
+import {  useEffect} from 'react'
 import { Loader } from '../components/Loader'
-import { AuthContext } from '../context/authContext'
-
 import { useMessage } from '../hooks/message.hook'
 import {QuizList} from '../components/QuizList'
 import {useDispatch , useSelector} from 'react-redux'
@@ -11,10 +9,8 @@ import { selectAllData, fetchQuizes } from '../redux/quizSlice'
 
 
 export const ProfilePage = () =>{
-  const {token} = useContext(AuthContext)
+
   const message = useMessage()
-
-
   const dispatch = useDispatch()
 
   const quizes = useSelector(selectAllData)
@@ -34,9 +30,7 @@ export const ProfilePage = () =>{
     message(errorMsg)
   }, [errorMsg, message])
 
-  const test = () =>{
-    console.log(quizes)
-}
+
 
 
 
@@ -47,7 +41,6 @@ if (quizesStatus === 'succeeded'){
             <h2>
                 Profile Page
             </h2>
-            <button onClick={test}>test</button>
             <div className="row">
                 <div className="col s10 m4">
                 <div className="card blue-grey darken-1">

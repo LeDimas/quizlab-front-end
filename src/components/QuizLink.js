@@ -3,9 +3,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
 import { Tooltip , IconButton } from '@material-ui/core'
 import {Link} from 'react-router-dom'
-import {useState , useEffect , useContext} from 'react'
+import {useState , useEffect } from 'react'
 import {MyDialog} from '../components/Dialog'
-import { AuthContext } from '../context/authContext'
 import { deleteQuiz } from '../redux/quizSlice'
 import { useDispatch , useSelector } from 'react-redux'
 import { useMessage } from '../hooks/message.hook';
@@ -35,7 +34,6 @@ const message = useMessage()
 const quizesStatus = useSelector(state => state.quiz.status)
 const errorMsg = useSelector(state=>state.quiz.error)
 
-const auth = useContext(AuthContext)
 const [deleteDialog , setDeleteDialog] = useState(false)
 const [createGameDialog , setCreateGameDialog] = useState(false)
 

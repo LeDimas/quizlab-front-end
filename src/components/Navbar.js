@@ -2,6 +2,8 @@ import {NavLink , useHistory} from 'react-router-dom'
 import {useContext , useState } from 'react'
 import {AuthContext} from '../context/authContext'
 import { useTranslation } from 'react-i18next'
+import {logout} from '../redux/userSlice'
+import {useDispatch} from 'react-redux'
 
 
 
@@ -9,10 +11,11 @@ export const NavBar = () => {
 
     const auth = useContext(AuthContext)
     const history = useHistory();
+    const dispatch = useDispatch()
 
     const logoutHandler = event =>{
         event.preventDefault();
-        auth.logout()
+        dispatch(logout())
         history.push('/')
     }
 

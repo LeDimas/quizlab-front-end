@@ -8,7 +8,7 @@ export const QuizList = () => {
 
     const quizes = useSelector(selectAllData)    
 
-    if(!quizes || quizes.message === 'no quizes')
+    if(!quizes || quizes[0].message === 'no quizes' )
     {
         return(
             <div className="col s10 m7 offset-m1">

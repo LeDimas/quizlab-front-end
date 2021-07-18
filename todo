@@ -1,11 +1,9 @@
-1. fix autologut 
+
 2.solve tooltips
 3.use strict or not?
 4.add images/videos questions/options
-5.move auth context?
-6.add user slice
 7.refactor quiz game
 8.change design
 9.perform tests
 10.build and deploy on server
-11.refactor backend?
+11.refactor backend? - +
